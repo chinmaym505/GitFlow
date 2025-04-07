@@ -47,6 +47,36 @@ def switch_branch(branch_name):
     except Exception as e:
         print(f"Error switching to branch: {e}")
 
+def delete_branch(branch_name):
+    try:
+        repo = git.Repo(os.getcwd())  # Access the current repository
+        if check_uncommitted_changes(repo):
+            return  # Stop branch deletion if there are uncommitted changes
+        
+        confirmation = input(f"Are you sure you want to delete the branch '{branch_name}'? (yes/no): ").strip().lower()
+        if confirmation == "yes":
+            repo.git.branch('-d', branch_name)
+            print(f"Branch '{branch_name}' deleted successfully.")
+        else:
+            print("Branch deletion canceled.")
+    except Exception as e:
+        print(f"Error deleting branch: {e}")
+
+def reset_changes():
+    try:
+        repo = git.Repo(os.getcwd())  # Access the current repository
+        if check_uncommitted_changes(repo):
+            return  # Stop resetting if there are uncommitted changes
+        
+        confirmation = input("Are you sure you want to reset all uncommitted changes? This action cannot be undone. (yes/no): ").strip().lower()
+        if confirmation == "yes":
+            repo.git.reset('--hard')
+            print("Uncommitted changes have been discarded.")
+        else:
+            print("Reset canceled.")
+    except Exception as e:
+        print(f"Error resetting changes: {e}")
+
 def print_help():
     print("""
     Welcome to Simplified Git! Available commands:
@@ -54,6 +84,8 @@ def print_help():
     - sync <message>: Stage, commit, and sync changes with a message
     - branch <branch_name>: Create and switch to a new branch
     - switch <branch_name>: Switch to an existing branch
+    - delete <branch_name>: Delete an existing branch (requires confirmation)
+    - reset: Discard all uncommitted changes (requires confirmation)
     - exit: Quit the tool
     """)
 
@@ -79,6 +111,14 @@ def main():
                 switch_branch(branch_name)
             else:
                 print("Please specify a branch name.")
+        elif command.startswith("delete"):
+            branch_name = command.split(" ", 1)[1] if " " in command else None
+            if branch_name:
+                delete_branch(branch_name)
+            else:
+                print("Please specify a branch name.")
+        elif command == "reset":
+            reset_changes()
         elif command == "exit":
             print("Goodbye!")
             break
