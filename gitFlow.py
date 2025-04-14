@@ -1,5 +1,6 @@
 import git
 import os
+import re
 import requests
 def ai():
     print("Enter 'exit' to exit")
@@ -16,6 +17,8 @@ def ai():
             {"role": "system", "content": """You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git. this is its code so you can understand it:
             import git
     import os
+    import re
+
 
     def start_repo():
         try:
@@ -78,6 +81,24 @@ def ai():
         except Exception as e:
             print(f"Error deleting branch: {e}")
 
+    def is_valid_git_url(url):
+    git_url_pattern = r"^(https?:\\/\\/|git@)[\\w.-]+(:\\d+)?\\/[\\w./-]+(\\.git)?$"
+    return bool(re.match(git_url_pattern, url))
+
+def link_remote(remote_name, remote_url):
+    try:
+        repo = git.Repo(os.getcwd())
+
+        # Validate remote URL before adding
+        if not is_valid_git_url(remote_url):
+            print(f"Error: '{remote_url}' is not a valid Git repository URL.")
+            return
+
+        repo.create_remote(remote_name, remote_url)
+        print(f"Remote '{remote_name}' linked with URL: {remote_url}")
+    except Exception as e:
+        print(f"Error linking remote: {e}")
+
     def reset_changes():
         try:
             repo = git.Repo(os.getcwd())  # Access the current repository
@@ -97,6 +118,7 @@ def ai():
         print(\"""
         Welcome to Simplified Git! Available commands:
         - start: Initialize a new Git repository
+        - link: Links current git repository to a remote
         - sync <message>: Stage, commit, and sync changes with a message
         - branch <branch_name>: Create and switch to a new branch
         - switch <branch_name>: Switch to an existing branch
@@ -232,10 +254,30 @@ def reset_changes():
     except Exception as e:
         print(f"Error resetting changes: {e}")
 
+def is_valid_git_url(url):
+    """Validate if the provided URL is a valid Git remote repository."""
+    git_url_pattern = r"^(https?:\/\/|git@)[\w.-]+(:\d+)?\/[\w./-]+(\.git)?$"
+    return bool(re.match(git_url_pattern, url))
+
+def link_remote(remote_name, remote_url):
+    try:
+        repo = git.Repo(os.getcwd())
+
+        # Validate remote URL before adding
+        if not is_valid_git_url(remote_url):
+            print(f"Error: '{remote_url}' is not a valid Git repository URL.")
+            return
+
+        repo.create_remote(remote_name, remote_url)
+        print(f"Remote '{remote_name}' linked with URL: {remote_url}")
+    except Exception as e:
+        print(f"Error linking remote: {e}")
+
 def print_help():
     print("""
     Welcome to Simplified Git! Available commands:
     - start: Initialize a new Git repository
+    - link: Links current git repository to a remote 
     - sync <message>: Stage, commit, and sync changes with a message
     - branch <branch_name>: Create and switch to a new branch
     - switch <branch_name>: Switch to an existing branch
@@ -275,6 +317,14 @@ def main():
                 print("Please specify a branch name.")
         elif command == "reset":
             reset_changes()
+        elif command.startswith("link"):
+            parts = command.split(" ")
+            if len(parts) == 3:
+                remote_name, remote_url = parts[1], parts[2]
+                link_remote(remote_name, remote_url)
+            else:
+                print("Usage: link <remote_name> <remote_url>")
+
         elif command == "ai":
             ai()
         elif command == "exit":
