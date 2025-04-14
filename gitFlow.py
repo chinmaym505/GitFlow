@@ -99,6 +99,19 @@ def link_remote(remote_name, remote_url):
     except Exception as e:
         print(f"Error linking remote: {e}")
 
+def clone_repository(remote_url, directory_name=None):
+    try:
+        if not is_valid_git_url(remote_url):
+            print(f"Error: '{remote_url}' is not a valid Git repository URL.")
+            return
+
+        directory_name = directory_name or os.path.basename(remote_url).replace(".git", "")
+        git.Repo.clone_from(remote_url, directory_name)
+        print(f"Repository cloned into '{directory_name}'")
+    except Exception as e:
+        print(f"Error cloning repository: {e}")
+
+
     def reset_changes():
         try:
             repo = git.Repo(os.getcwd())  # Access the current repository
@@ -117,6 +130,7 @@ def link_remote(remote_name, remote_url):
     def print_help():
         print(\"""
         Welcome to Simplified Git! Available commands:
+        - copy: Copies a remote Git repository into a new local one8
         - start: Initialize a new Git repository
         - link: Links current git repository to a remote
         - sync <message>: Stage, commit, and sync changes with a message
@@ -276,11 +290,26 @@ def link_remote(remote_name, remote_url):
     except Exception as e:
         print(f"Error linking remote: {e}")
 
+def clone_repository(remote_url, directory_name=None):
+    """Clone a repository if the URL is valid."""
+    try:
+        if not is_valid_git_url(remote_url):
+            print(f"Error: '{remote_url}' is not a valid Git repository URL.")
+            return
+
+        directory_name = directory_name or os.path.basename(remote_url).replace(".git", "")
+        git.Repo.clone_from(remote_url, directory_name)
+        print(f"Repository cloned into '{directory_name}'")
+    except Exception as e:
+        print(f"Error cloning repository: {e}")
+
+
 def print_help():
     print("""
     Welcome to Simplified Git! Available commands:
+    - copy: copies a remote Git repository into a new local one
     - start: Initialize a new Git repository
-    - link: Links current git repository to a remote 
+    - link: Links current Git repository to a remote 
     - sync <message>: Stage, commit, and sync changes with a message
     - branch <branch_name>: Create and switch to a new branch
     - switch <branch_name>: Switch to an existing branch
@@ -333,9 +362,19 @@ def main():
             ai()
         elif command == "help":
                 print_help()
+        
         elif command == "exit":
             print("Goodbye!")
             break
+
+        elif command.startswith("copy"):
+            parts = command.split(" ")
+            if len(parts) == 2:
+                remote_url = parts[1]
+                clone_repository(remote_url)
+            else:
+                print("Usage: copy <remote_url>")
+
         else:
             print("Unknown command. Please try again.")
 
