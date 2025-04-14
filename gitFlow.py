@@ -14,7 +14,7 @@ def ai():
 
     def ai(user_input):
         inputs = [
-            {"role": "system", "content": """You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git. this is its code so you can understand it:
+            {"role": "system", "content": """You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git. this is the tool's code so you can understand it to help the user navigate errors, and their questions:
             import git
     import os
     import re
@@ -124,6 +124,7 @@ def link_remote(remote_name, remote_url):
         - switch <branch_name>: Switch to an existing branch
         - delete <branch_name>: Delete an existing branch (requires confirmation)
         - reset: Discard all uncommitted changes (requires confirmation)
+        - help: displays the help menu
         - exit: Quit the tool
         \""")
 
@@ -157,6 +158,8 @@ def link_remote(remote_name, remote_url):
                     print("Please specify a branch name.")
             elif command == "reset":
                 reset_changes()
+            elif command == "help":
+                print_help()
             elif command == "exit":
                 print("Goodbye!")
                 break
@@ -284,6 +287,7 @@ def print_help():
     - delete <branch_name>: Delete an existing branch (requires confirmation)
     - reset: Discard all uncommitted changes (requires confirmation)
     - ai: Opens up an AI assistant to help you
+    - help: Displays the help menu
     - exit: Quit the tool
     """)
 
@@ -327,6 +331,8 @@ def main():
 
         elif command == "ai":
             ai()
+        elif command == "help":
+                print_help()
         elif command == "exit":
             print("Goodbye!")
             break
