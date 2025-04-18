@@ -360,11 +360,8 @@ def print_help():
 
 def main():
     while True:
-        working_directory = input("Enter the directory to work in (or press Enter to use the current directory): ").strip()
-        if not working_directory:
-            working_directory = os.getcwd()
-            break
-        elif os.path.isdir(working_directory):
+        working_directory = input("Enter the directory to work in: ").strip()
+        if os.path.isdir(working_directory):
             os.chdir(working_directory)
             break
         else:
