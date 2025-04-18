@@ -15,38 +15,11 @@ def ai():
 
     def ai(user_input):
         inputs = [
-            {"role": """system", "content": "You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git. here is the code so you can understand the tool better:\n
+            {"role": "system", "content": """You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git. here is the code so you can understand the tool better:\n
              import git
 import os
 import re
 import requests
-
-def ai():
-    print("Enter 'exit' to exit")
-    API_BASE_URL = "https://api.cloudflare.com/client/v4/accounts/31f7cbaa95c2a8ee374b735d539bbc08/ai/run/"
-    headers = {"Authorization": "Bearer TurQr-Rnk6U9uTnYYceuqRtV2TXuVf5PFh_1Gr7p"}
-
-    def run(model, inputs):
-        input_data = {"messages": inputs}
-        response = requests.post(f"{API_BASE_URL}{model}", headers=headers, json=input_data)
-        return response.json()
-
-    def ai(user_input):
-        inputs = [
-            {"role": "system", "content": "You are a friendly assistant that helps solve issues with GitFlow, a simplified version of git."},
-            {"role": "user", "content": user_input}
-        ]
-        output = run("@cf/meta/llama-3-8b-instruct", inputs)
-        return output.get("result", {}).get("response", "No response received.")
-
-    using = True
-    while using:
-        user_input = input("> ")
-        if user_input == "exit":
-            using = False
-        else:
-            print(ai(user_input))
-
 def start_repo():
     try:
         repo = git.Repo.init(os.getcwd())
@@ -61,16 +34,23 @@ def check_uncommitted_changes(repo):
     return False
 
 def sync_changes(message):
-    try:
+        try:
         repo = git.Repo(os.getcwd())
         repo.git.add(all=True)
         repo.git.commit(m=message)
-        origin = repo.remotes.origin
-        origin.pull(rebase=True)
-        origin.push()
+        try:
+            origin = repo.remotes.origin
+            origin.pull(rebase=True)
+            origin.push()
+            repo.pull(rebase=True)
+            repo.push()
+        except:
+            repo.pull(rebase=True)
+            repo.push()
         print(f"Changes synced with message: '{message}'")
     except Exception as e:
         print(f"Error syncing changes: {e}")
+
 
 def create_branch(branch_name):
     try:
@@ -157,7 +137,6 @@ def print_help():
     - switch <branch_name>: Switch to an existing branch
     - delete <branch_name>: Delete an existing branch (requires confirmation)
     - reset: Discard all uncommitted changes (requires confirmation)
-    - ai: Opens up an AI assistant to help you
     - help: Displays the help menu
     - exit: Quit the tool
     \""")
@@ -175,60 +154,7 @@ def main():
             print(f"Error: '{working_directory}' is not a valid directory. Please try again.")
 
     print(f"Working in directory: {working_directory}")
-    print_help()
-
-    while True:
-        command = input("Enter a command (or 'exit' to quit): ").strip().lower()
-        if command == "start":
-            start_repo()
-        elif command.startswith("sync"):
-            message = command.split(" ", 1)[1] if " " in command else "Default sync message"
-            sync_changes(message)
-        elif command.startswith("branch"):
-            branch_name = command.split(" ", 1)[1] if " " in command else None
-            if branch_name:
-                create_branch(branch_name)
-            else:
-                print("Please specify a branch name.")
-        elif command.startswith("switch"):
-            branch_name = command.split(" ", 1)[1] if " " in command else None
-            if branch_name:
-                switch_branch(branch_name)
-            else:
-                print("Please specify a branch name.")
-        elif command.startswith("delete"):
-            branch_name = command.split(" ", 1)[1] if " " in command else None
-            if branch_name:
-                delete_branch(branch_name)
-            else:
-                print("Please specify a branch name.")
-        elif command == "reset":
-            reset_changes()
-        elif command.startswith("link"):
-            parts = command.split(" ")
-            if len(parts) == 3:
-                remote_name, remote_url = parts[1], parts[2]
-                link_remote(remote_name, remote_url)
-            else:
-                print("Usage: link <remote_name> <remote_url>")
-        elif command == "ai":
-            ai()
-        elif command == "help":
-            print_help()
-        elif command == "exit":
-            print("Goodbye!")
-            break
-        elif command.startswith("copy"):
-            parts = command.split(" ")
-            if len(parts) == 2:
-                remote_url = parts[1]
-                clone_repository(remote_url)
-            else:
-                print("Usage: copy <remote_url>")
-        else:
-            print("Unknown command. Please try again.")
-
-if __name__ == "__main__":
+    print_hel
     main()"""},
             {"role": "user", "content": user_input}
         ]
@@ -261,9 +187,12 @@ def sync_changes(message):
         repo = git.Repo(os.getcwd())
         repo.git.add(all=True)
         repo.git.commit(m=message)
-        origin = repo.remotes.origin
-        origin.pull(rebase=True)
-        origin.push()
+        try:
+            origin = repo.remotes.origin
+            origin.pull(rebase=True)
+            origin.push()
+        except:
+            pass
         print(f"Changes synced with message: '{message}'")
     except Exception as e:
         print(f"Error syncing changes: {e}")
