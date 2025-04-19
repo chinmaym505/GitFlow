@@ -1,14 +1,8 @@
-from setuptools import setup
-import os
+from PyInstaller.__main__ import run
 
-APP = ["gitFlow.py"]  # Adjust for new folder
-OPTIONS = {
-    'argv_emulation': True,
-    'packages': ['requests', 'gitpython']
-}
-
-setup(
-    app=APP,
-    options={'py2app': OPTIONS},
-    setup_requires=['py2app'],
-)
+run([
+    'gitFlow.py',
+    '--onefile',  # Package as a single executable
+    '--console',  # Ensure it runs in Terminal
+    '--name=gitFlow'  # Name the final binary
+])
