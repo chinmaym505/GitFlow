@@ -30,12 +30,9 @@ jobs:
           mv mac/dist/gitFlow payload/usr/local/bin/
           pkgbuild --root payload --identifier com.yourdomain.gitFlow --version 1.0 --install-location /usr/local/bin mac/gitFlow.pkg
 
-      - name: Install create-dmg (for .dmg creation)
-        run: brew install create-dmg
-
       - name: Create macOS Disk Image (.dmg)
         run: |
-          create-dmg --app=mac/dist/gitFlow --dmg=mac/gitFlow.dmg
+          hdiutil create -volname "gitFlow" -srcfolder mac/dist/gitFlow -format UDZO -o mac/gitFlow.dmg
 
       - name: Upload .pkg Installer
         uses: actions/upload-artifact@v4
