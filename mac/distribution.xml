@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>GitFlow Installer</title>
+    <background file="icon.icns" scaling="tofit" alignment="center"/>
+    <pkg-ref id="com.CyberDragons.gitFlow"/>
+</installer-gui-script>
