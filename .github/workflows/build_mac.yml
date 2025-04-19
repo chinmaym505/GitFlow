@@ -24,11 +24,11 @@ jobs:
         working-directory: mac
         run: python setup.py
 
-      - name: Create macOS Installer (.pkg)
+      - name: Create macOS Installer (.pkg) with Icon
         run: |
           mkdir -p payload/usr/local/bin
           mv mac/dist/gitFlow payload/usr/local/bin/
-          pkgbuild --root payload --identifier com.yourdomain.gitFlow --version 1.0 --install-location /usr/local/bin mac/gitFlow.pkg
+          pkgbuild --root payload --identifier com.yourdomain.gitFlow --version 1.0 --install-location /usr/local/bin --install-icon mac/icon.icns mac/gitFlow.pkg
 
       - name: Upload .pkg Installer
         uses: actions/upload-artifact@v4
