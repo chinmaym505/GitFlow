@@ -24,3 +24,12 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 * `delete <branch_name>`: Delete an existing branch (requires confirmation)
 * `reset`: Discard all uncommitted changes (requires confirmation)
 * `sync <message>`: Stage, commit,
+
+
+
+**TO DO**
+------------
+- [ ] Make executable for Mac
+- [ ] Make installer for Mac
+- [ ] Make an AI model to replace http request one
+- [ ] Add AI commits 
