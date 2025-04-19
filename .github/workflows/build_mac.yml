@@ -32,7 +32,7 @@ jobs:
 
       - name: Create Package (.pkg)
         run: |
-          pkgbuild --root payload --identifier com.yourdomain.gitFlow --version 1.0 --install-location /usr/local/bin gitFlow.pkg
+          pkgbuild --root payload --identifier com.CyberDragons.gitFlow --version 1.0 --install-location /usr/local/bin gitFlow.pkg
 
       - name: Add Installer UI (Using productbuild)
         run: |
@@ -40,7 +40,7 @@ jobs:
           <installer-gui-script minSpecVersion="1">
               <title>GitFlow Installer</title>
               <background file="mac/icon.icns" scaling="tofit" alignment="center"/>
-              <pkg-ref id="com.yourdomain.gitFlow"/>
+              <pkg-ref id="com.CyberDragons.gitFlow"/>
           </installer-gui-script>' > mac/distribution.xml
 
           productbuild --distribution mac/distribution.xml --package-path gitFlow.pkg mac/gitFlow.pkg
