@@ -24,6 +24,12 @@ jobs:
         working-directory: mac
         run: python setup.py
 
+      - name: Ensure dist directory exists
+        run: mkdir -p mac/dist
+
+      - name: Move Binary to Correct Directory
+        run: mv mac/gitFlow mac/dist/
+
       - name: Create macOS Installer (.pkg)
         run: |
           mkdir -p payload/usr/local/bin
@@ -32,7 +38,8 @@ jobs:
 
       - name: Create macOS Disk Image (.dmg)
         run: |
-          hdiutil create -volname "gitFlow" -srcfolder mac/dist/gitFlow -format UDZO -o mac/gitFlow.dmg
+          ls mac/dist  # Debugging step to check if binary exists
+          hdiutil create -volname "gitFlow" -srcfolder mac/dist -format UDZO -o mac/gitFlow.dmg
 
       - name: Upload .pkg Installer
         uses: actions/upload-artifact@v4
