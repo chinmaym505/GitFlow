@@ -24,8 +24,27 @@ jobs:
         working-directory: mac
         run: python setup.py
 
-      - name: Upload Artifact
+      - name: Create macOS Installer (.pkg)
+        run: |
+          mkdir -p payload/usr/local/bin
+          mv mac/dist/gitFlow payload/usr/local/bin/
+          pkgbuild --root payload --identifier com.yourdomain.gitFlow --version 1.0 --install-location /usr/local/bin mac/gitFlow.pkg
+
+      - name: Install create-dmg (for .dmg creation)
+        run: brew install create-dmg
+
+      - name: Create macOS Disk Image (.dmg)
+        run: |
+          create-dmg --app=mac/dist/gitFlow --dmg=mac/gitFlow.dmg
+
+      - name: Upload .pkg Installer
         uses: actions/upload-artifact@v4
         with:
-          name: gitFlow-mac-terminal
-          path: mac/dist/gitFlow
+          name: gitFlow-mac-installer
+          path: mac/gitFlow.pkg
+
+      - name: Upload .dmg Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitFlow-mac-dmg
+          path: mac/gitFlow.dmg
