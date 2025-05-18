@@ -37,3 +37,9 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
     - [x] integrate executable into python code
     - [ ] make full executable
 - [ ] Add AI commits 
+
+
+
+**Notes**
+------------
+The GitFlow LLM LLamafile was too big to be uploaded to GitHub, sorry!
