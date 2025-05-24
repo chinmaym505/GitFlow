@@ -1,31 +1,63 @@
 # GitFlow
+
 GitFlow is a command-line tool designed to simplify the process of managing Git repositories. It provides a user-friendly interface for common Git operations, making it easier for developers to work with their code.
 
-**Features**
-------------
+## Features
 
-* Initialize a new Git repository
-* Link a remote Git repository to the local one
-* Clone a remote Git repository
-* Create and switch to a new branch
-* Switch to an existing branch
-* Delete an existing branch (requires confirmation)
-* Discard all uncommitted changes (requires confirmation)
-* Stage, commit, and sync changes with a message
+- Initialize a new Git repository
+- Link a remote Git repository to the local one
+- Clone a remote Git repository
+- Fork a repository and link it to a new remote
+- Create and switch to a new branch
+- Switch to an existing branch
+- Delete an existing branch (requires confirmation)
+- Discard all uncommitted changes (requires confirmation)
+- Stage, commit, and sync changes with a message
+- Interactive AI assistant for GitFlow help
 
-**Commands**
-------------
+## Commands
 
-* `start`: Initialize a new Git repository
-* `link <remote_name> <remote_url>`: Link a remote Git repository to the local one
-* `clone <remote_url> [<directory_name>]`: Clone a remote Git repository
-* `branch <branch_name>`: Create and switch to a new branch
-* `switch <branch_name>`: Switch to an existing branch
-* `delete <branch_name>`: Delete an existing branch (requires confirmation)
-* `reset`: Discard all uncommitted changes (requires confirmation)
-* `sync <message>`: Stage, commit,
+- `start`  
+  Initialize a new Git repository
 
+- `link <remote_name> <remote_url>`  
+  Link a remote Git repository to the local one
 
+- `copy <remote_url>`  
+  Clone a remote Git repository
+
+- `fork <remote_to_be_forked> <remote_forked>`  
+  Fork a repository and link it to a new remote
+
+- `branch <branch_name>`  
+  Create and switch to a new branch
+
+- `switch <branch_name>`  
+  Switch to an existing branch
+
+- `delete <branch_name>`  
+  Delete an existing branch (requires confirmation)
+
+- `reset`  
+  Discard all uncommitted changes (requires confirmation)
+
+- `sync <message>`  
+  Stage, commit, and sync changes with a message
+
+- `ai`  
+  Opens the interactive AI assistant for GitFlow help
+
+- `help`  
+  Displays the help menu
+
+- `exit`  
+  Quit the tool
+
+## Usage
+
+1. Run the tool and enter the directory you want to work in.
+2. Use the commands above to manage your Git repositories.
+3. Type `help` at any time to see the list of available commands.
 
 **TO DO**
 ------------
