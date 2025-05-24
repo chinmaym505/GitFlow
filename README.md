@@ -31,11 +31,11 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 ------------
 - [x] Make executable for Mac
 - [x] Make installer for Mac
-- [ ] Make an AI model to replace http request one
+- [x] Make an AI model to replace http request one
     - [x] make model
     - [x] make fast executable (llamafile)
     - [x] integrate executable into python code
-    - [ ] make full executable
+    - [x] make full executable
 - [ ] Add AI commits 
 
 
