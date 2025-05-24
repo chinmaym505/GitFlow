@@ -29,8 +29,6 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 
 **TO DO**
 ------------
-- [x] Make executable for Mac
-- [x] Make installer for Mac
 - [x] Make an AI model to replace http request one
     - [x] make model
     - [x] make fast executable (llamafile)
