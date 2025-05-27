@@ -1,0 +1,31 @@
+@startuml
+actor User
+
+rectangle "GitFlow" {
+  (Start Repository)
+  (Clone Repository)
+  (Link Remote)
+  (Sync Changes)
+  (Create Branch)
+  (Switch Branch)
+  (Delete Branch)
+  (Reset Changes)
+  (Fork Repository)
+  (AI Assistant)
+  (Help)
+  (Exit)
+}
+
+User -- (Start Repository)
+User -- (Clone Repository)
+User -- (Link Remote)
+User -- (Sync Changes)
+User -- (Create Branch)
+User -- (Switch Branch)
+User -- (Delete Branch)
+User -- (Reset Changes)
+User -- (Fork Repository)
+User -- (AI Assistant)
+User -- (Help)
+User -- (Exit)
+@enduml
