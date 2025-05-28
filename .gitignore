@@ -1,0 +1,5 @@
+.GitFlow/
+dist/
+build/
+*.exe
+build/gitFlow/

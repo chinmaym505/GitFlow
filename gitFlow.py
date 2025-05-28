@@ -1,3 +1,11 @@
+###################################################
+#       GitFlow - A simplified version of Git     #
+#          Made by Chinmay M (chinmaym505)        #
+#                    5/28/2025                    #
+###################################################
+
+# {{58DFC7E2-4C46-4715-9FCB-684D5EE7E1CF}
+
 # Import necessary libraries
 import git  # Provides Git functionalities for repository management
 import os  # Enables interaction with the operating system, such as file paths and directories
@@ -15,10 +23,24 @@ import socket # Enables low-level networking interfaces, such as creating socket
 import difflib # Provides classes and functions for comparing sequences, particularly useful for generating diffs between files
 import subprocess # Allows the execution of external commands and processes, such as starting the Llamafile server
 import requests # Facilitates making HTTP requests to external APIs, such as the Llamafile server for AI assistance
+import tkinter as tk  # Provides a GUI toolkit for creating graphical user interfaces
+from tkinter import filedialog  # Provides file dialog functionalities for selecting directories
+from tkinter import messagebox  # Provides message box functionalities for displaying alerts and information   
+os.system("title GitFlow 1.2.1")
  # Base URL for the local Llamafile server
 API_BASE_URL = "http://127.0.0.1:8080/v1/chat/completions"
 # Headers for the API request
 headers = {"Content-Type": "application/json"}
+
+def select_directory():
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+    folder_selected = filedialog.askdirectory(title="Select your project folder")
+    if folder_selected == "":
+        messagebox.showwarning("Warning","No folder selected. Exiting.")
+        sys.exit(0)  # Exit if no folder is selected
+    root.destroy()
+    return folder_selected
 
 def ensure_llamafile_server():
     """Ensure the Llamafile server is running. Start it if not already running."""
@@ -231,76 +253,80 @@ def sync_changes(message):
     if message == 'ai':
         ensure_llamafile_server()  # Ensure server is started only if needed
         print("Starting AI commit message generation...")
-        while True:
-            # Clean out the temp folder at the start of each AI commit attempt
-            if os.path.exists(temp_folder):
-                shutil.rmtree(temp_folder)
-            os.makedirs(temp_folder, exist_ok=True)
-            modified_files = [item.a_path for item in repo.index.diff(None)]
-            # Define the hidden folder path
-            hidden_folder = os.path.join(repo.working_tree_dir, ".GitFlow")
-            ctypes.windll.kernel32.SetFileAttributesW(hidden_folder, 2)
-
-            # Define the temp folder path inside .GitFlow
-            temp_folder = os.path.join(hidden_folder, "temp")
-            
-            commits = []
-            for file_name in modified_files:
-                # Get the original contents of the file from HEAD (last committed version)
-                original_content = repo.git.show(f"HEAD:{file_name}")
-
-                # Define the destination file path inside the temp folder
-                destination_file = os.path.join(temp_folder, "original " + file_name)
-
-                # Ensure the destination directory exists (for nested files)
-                os.makedirs(os.path.dirname(destination_file), exist_ok=True)
-
-                # Write the original content to the destination file
-                with open(destination_file, "w", encoding="utf-8") as file:
-                    file.write(original_content)
-
-                
-                # Call the llamafile function with the file name
-                commit_msg = ai_commit(destination_file, file_name)
-                if commit_msg:
-                    # Remove triple backticks and prefixes like 'feat:', 'fix:', etc.
-                    for prefix in ["feat:", "fix:", "chore:", "refactor:", "docs:", "style:", "test:", "perf:", "ci:", "build:", "revert:","Feat:","Fix:"]:
-                        commit_msg = commit_msg.replace(prefix, "")
-                    commit_msg = commit_msg.replace('```', '').strip()
-                    # Add file name as a header
-                    formatted_msg = f"*{file_name}*\n{commit_msg}"
-                    commits.append(formatted_msg)
-            # Combine all commit messages into a single string
-            commit_message = "\n\n".join(filter(None, commits)).strip()
-            user_input = input("Generated commit message:\n" + commit_message + "\nDo you want to use this message? (yes/no/cancel): ").strip().lower()
-            if user_input == "yes":
-                message = commit_message
-                break
-            elif user_input == "no":
-                print("Retrying to generate commit message...")
-                continue  # Regenerate commit message
-            elif user_input == "cancel":
-                print("AI commit cancelled. No changes were committed.")
-                return
-            else:
-                print("Please answer 'yes', 'no', or 'cancel'.")
-        # End of while True loop for AI commit
-        # After breaking, continue with the commit and push logic
+        # Clean out the temp folder at the start
+        if os.path.exists(temp_folder):
+            shutil.rmtree(temp_folder)
+        os.makedirs(temp_folder, exist_ok=True)
         try:
-            # Clean out the temp folder after AI commit is done
-            if os.path.exists(temp_folder):
-                shutil.rmtree(temp_folder)
-            repo.git.add(all=True)
-            repo.git.commit(m=message)
-            try:
-                origin = repo.remotes.origin
-                origin.pull(rebase=True)
-                origin.push()
-            except:
-                pass
-            print(f"Changes synced with message:\n{message}")
+            while True:
+                modified_files = [item.a_path for item in repo.index.diff(None)]
+                hidden_folder = os.path.join(repo.working_tree_dir, ".GitFlow")
+                ctypes.windll.kernel32.SetFileAttributesW(hidden_folder, 2)
+                commits = []
+                for file_name in modified_files:
+                    original_content = repo.git.show(f"HEAD:{file_name}")
+                    destination_file = os.path.join(temp_folder, "original " + file_name)
+                    os.makedirs(os.path.dirname(destination_file), exist_ok=True)
+                    with open(destination_file, "w", encoding="utf-8") as file:
+                        file.write(original_content)
+                    commit_msg = ai_commit(destination_file, file_name)
+                    if commit_msg:
+                        for prefix in ["feat:", "fix:", "chore:", "refactor:", "docs:", "style:", "test:", "perf:", "ci:", "build:", "revert:","Feat:","Fix:"]:
+                            commit_msg = commit_msg.replace(prefix, "")
+                        commit_msg = commit_msg.replace('```', '').strip()
+                        formatted_msg = f"*{file_name}*\n{commit_msg}"
+                        commits.append(formatted_msg)
+                commit_message = "\n\n".join(filter(None, commits)).strip()
+                user_input = input("Generated commit message:\n" + commit_message + "\nDo you want to use this message? (yes/no/cancel): ").strip().lower()
+                if user_input == "yes":
+                    commit_message_file = os.path.join(temp_folder, "commit_message.txt")
+                    with open(commit_message_file, "w", encoding="utf-8") as f:
+                        f.write(commit_message)
+                    message = commit_message_file
+                    # Proceed to commit
+                    repo.git.add(all=True)
+                    repo.git.commit(F=message)
+                    try:
+                        origin = repo.remotes.origin
+                        origin.pull(rebase=True)
+                        origin.push()
+                    except:
+                        pass
+                    print(f"Changes synced with message:\n{open(message, 'r', encoding='utf-8').read()}")
+                    break
+                elif user_input == "no":
+                    next_action = input("Do you want to retry AI, enter a message manually, or cancel? (ai/manual/cancel): ").strip().lower()
+                    if next_action == "manual":
+                        manual_message = input("Enter your commit message: ")
+                        repo.git.add(all=True)
+                        repo.git.commit(m=manual_message)
+                        try:
+                            origin = repo.remotes.origin
+                            origin.pull(rebase=True)
+                            origin.push()
+                        except:
+                            pass
+                        print(f"Changes synced with message:\n{manual_message}")
+                        break
+                    elif next_action == "ai":
+                        print("Retrying to generate commit message...")
+                        continue
+                    elif next_action == "cancel":
+                        print("AI commit cancelled. No changes were committed.")
+                        break
+                    else:
+                        print("Invalid option. Cancelling.")
+                        break
+                elif user_input == "cancel":
+                    print("AI commit cancelled. No changes were committed.")
+                    break
+                else:
+                    print("Please answer 'yes', 'no', or 'cancel'.")
         except Exception as e:
             print(f"Error syncing changes: {e}")
+        finally:
+            if os.path.exists(temp_folder):
+                shutil.rmtree(temp_folder)
         return
     try:
         repo = git.Repo(os.getcwd())
@@ -422,21 +448,26 @@ def print_help():
     """)
 
 def main():
-    working_directory = None
-    while True:
-        working_directory = input("Enter the directory to work in: ").strip()
-        if os.path.isdir(working_directory):
-            os.chdir(working_directory)
-            break
-        else:
-            print(f"Error: '{working_directory}' is not a valid directory. Please try again.")
+    # Check for folder path argument (for context menu integration)
+    if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
+        working_directory = sys.argv[1]
+        os.chdir(working_directory)
+    else:
+        while True:
+            working_directory = select_directory()
+            if os.path.isdir(working_directory):
+                os.chdir(working_directory)
+                break
+            else:
+                print(f"Error: '{working_directory}' is not a valid directory. Please try again.")
     # Ensure .GitFlow is ignored in the selected repo (if any)
+    os.system(f"title {os.path.basename(os.path.normpath(working_directory))} - GitFlow 1.2.1")
     try:
         repo = git.Repo(os.getcwd())
         ensure_gitflow_ignored(repo)
     except Exception:
         pass  # Not a git repo yet, ignore
-    print(f"Working in directory: {working_directory}")
+    print(f"Working in directory: {os.getcwd()}")
     print_help()
     while True:
         command = input("Enter a command (or 'exit' to quit): ").strip().lower()
