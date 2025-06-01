@@ -1,7 +1,7 @@
 ###################################################
 #       GitFlow - A simplified version of Git     #
 #          Made by Chinmay M (chinmaym505)        #
-#                    5/28/2025                    #
+#                    6/1/2025                     #
 ###################################################
 
 # {{58DFC7E2-4C46-4715-9FCB-684D5EE7E1CF}
@@ -14,7 +14,6 @@ import requests  # Facilitates making HTTP requests to external APIs
 import subprocess  # Enables the execution of external commands and processes
 import json  # Provides functionalities for working with JSON data
 import time  # Allows for time-related functions, such as delays
-import keyboard  # Provides functionalities for keyboard event handling
 import readchar  # Facilitates reading single characters from the keyboard
 import sys  # Provides access to system-specific parameters and functions
 import ctypes # Provides access to low-level system calls, particularly for setting file attributes on Windows
@@ -66,15 +65,14 @@ def ensure_llamafile_server():
         print("Llamafile server did not start in time.")
 
 def toggle_keyboard_block(block=True):
-    """Blocks or unblocks all common keys, including letters A-Z."""
+    import keyboard  # Import only when needed
     keys_to_manage = [
         'esc', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12',
         'print_screen', 'scroll_lock', 'pause',
         'tab', 'caps lock', 'shift', 'ctrl', 'alt', 'space', 'enter', 'backspace',
         'insert', 'home', 'page_up', 'delete', 'end', 'page_down',
         'left', 'right', 'up', 'down',
-    ] + [str(i) for i in range(10)] + [chr(i) for i in range(ord('a'), ord('z')+1)]  # Numbers + Letters A-Z
-
+    ] + [str(i) for i in range(10)] + [chr(i) for i in range(ord('a'), ord('z')+1)]
     for key in keys_to_manage:
         if block:
             keyboard.block_key(key)
@@ -277,7 +275,7 @@ def sync_changes(message):
                         formatted_msg = f"*{file_name}*\n{commit_msg}"
                         commits.append(formatted_msg)
                 commit_message = "\n\n".join(filter(None, commits)).strip()
-                user_input = input("Generated commit message:\n" + commit_message + "\nDo you want to use this message? (yes/no/cancel): ").strip().lower()
+                user_input = readchar_input("Generated commit message:\n" + commit_message + "\nDo you want to use this message? (yes/no): ")
                 if user_input == "yes":
                     commit_message_file = os.path.join(temp_folder, "commit_message.txt")
                     with open(commit_message_file, "w", encoding="utf-8") as f:
@@ -295,9 +293,9 @@ def sync_changes(message):
                     print(f"Changes synced with message:\n{open(message, 'r', encoding='utf-8').read()}")
                     break
                 elif user_input == "no":
-                    next_action = input("Do you want to retry AI, enter a message manually, or cancel? (ai/manual/cancel): ").strip().lower()
+                    next_action = readchar_input("Do you want to retry AI, enter a message manually, or cancel? (ai/manual/cancel): ")
                     if next_action == "manual":
-                        manual_message = input("Enter your commit message: ")
+                        manual_message = readchar_input("Enter your commit message: ")
                         repo.git.add(all=True)
                         repo.git.commit(m=manual_message)
                         try:
@@ -317,11 +315,9 @@ def sync_changes(message):
                     else:
                         print("Invalid option. Cancelling.")
                         break
-                elif user_input == "cancel":
-                    print("AI commit cancelled. No changes were committed.")
-                    break
                 else:
-                    print("Please answer 'yes', 'no', or 'cancel'.")
+                    print("Please answer 'yes' or 'no'.")
+                    break
         except Exception as e:
             print(f"Error syncing changes: {e}")
         finally:
@@ -447,6 +443,23 @@ def print_help():
     - fork <remote_to_be_forked> <remote_forked>: Fork a repository and link it to a new remote
     """)
 
+def readchar_input(prompt):
+    print(prompt, end='', flush=True)
+    user_input = ''
+    while True:
+        key = readchar.readkey()
+        if key == readchar.key.ENTER:
+            print()
+            break
+        elif key == readchar.key.BACKSPACE:
+            if len(user_input) > 0:
+                user_input = user_input[:-1]
+                print('\b \b', end='', flush=True)
+        elif isinstance(key, str):
+            user_input += key
+            print(key, end='', flush=True)
+    return user_input.strip().lower()
+
 def main():
     # Check for folder path argument (for context menu integration)
     if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
@@ -470,7 +483,7 @@ def main():
     print(f"Working in directory: {os.getcwd()}")
     print_help()
     while True:
-        command = input("Enter a command (or 'exit' to quit): ").strip().lower()
+        command = readchar_input("Enter a command (or 'exit' to quit): ").strip().lower()
         if command == "start":
             start_repo()
         elif command.startswith("sync"):
@@ -509,8 +522,7 @@ def main():
             print_help()
         elif command == "exit":
             print("Goodbye!")
-            keyboard.unhook_all()
-            break
+            sys.exit(0)
         elif command.startswith("fork"):
             parts = command.split(" ")
             if len(parts) == 3:
@@ -532,5 +544,4 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nInterrupted. Exiting program.")
-        keyboard.unhook_all()  # Clean up keyboard hooks on interrupt
         sys.exit(0)
