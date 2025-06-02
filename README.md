@@ -62,16 +62,8 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 **TO DO**
 ------------
 - [x] Make an AI model to replace http request one
-    - [x] Make model
-    - [x] Make fast executable (llamafile)
-    - [x] Integrate executable into python code
-    - [x] Make full executable
-- [ ] Add AI commits
-  - [ ] Utilize read changed files (before and after)
-  - [ ] Make current AI model describe the changes
-  - [ ] Integrate AI change describing to make commits in python
-  - [ ] Add option for AI commits in `sync` command
-  - [ ]  Make full executable
+- [x] Add AI commits
+
 
 
 
