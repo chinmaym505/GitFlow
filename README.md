@@ -42,7 +42,7 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
   Discard all uncommitted changes (requires confirmation)
 
 - `sync <message>`  
-  Stage, commit, and sync changes with a message
+  Stage, commit, and sync changes with a message, if the message is 'ai', AI will generate a commit message for you
 
 - `ai`  
   Opens the interactive AI assistant for GitFlow help
