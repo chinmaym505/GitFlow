@@ -13,7 +13,7 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 - Delete an existing branch (requires confirmation)
 - Discard all uncommitted changes (requires confirmation)
 - Stage, commit, and sync changes with a message
-- Interactive AI assistant for GitFlow help
+- Interactive AI assistant for GitFlow help and commits
 
 ## Commands
 
