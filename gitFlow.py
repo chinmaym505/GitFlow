@@ -1,7 +1,7 @@
 ###################################################
 #       GitFlow - A simplified version of Git     #
 #          Made by Chinmay M (chinmaym505)        #
-#                    6/1/2025                     #
+#                    6/2/2025                     #
 ###################################################
 
 # {{58DFC7E2-4C46-4715-9FCB-684D5EE7E1CF}
@@ -385,17 +385,22 @@ def reset_changes():
         print(f"Error resetting changes: {e}")
 
 def is_valid_git_url(url):
-    git_url_pattern = r"^(https?:\/\/|git@)[\w.-]+(:\d+)?\/[\w./-]+(\.git)?$"
+    git_url_pattern = r"^(https?:\/\/|)[\w.-]+(:\d+)?\/[\w./-]+(\.git)?$"
     return bool(re.match(git_url_pattern, url))
 
-def link_remote(remote_name, remote_url):
+def link_remote(remote_name, remote_url, repo=None):
     try:
-        repo = git.Repo(os.getcwd())
+        if repo is None:
+            repo = git.Repo(os.getcwd())
         if not is_valid_git_url(remote_url):
             print(f"Error: '{remote_url}' is not a valid Git repository URL.")
             return
-        repo.create_remote(remote_name, remote_url)
-        print(f"Remote '{remote_name}' linked with URL: {remote_url}")
+        if remote_name in repo.remotes:
+            repo.git.remote('set-url', remote_name, remote_url)
+            print(f"Remote '{remote_name}' URL updated to: {remote_url}")
+        else:
+            repo.create_remote(remote_name, remote_url)
+            print(f"Remote '{remote_name}' linked with URL: {remote_url}")
     except Exception as e:
         print(f"Error linking remote: {e}")
 
@@ -404,7 +409,9 @@ def clone_repository(remote_url, directory_name=None):
         if not is_valid_git_url(remote_url):
             print(f"Error: '{remote_url}' is not a valid Git repository URL.")
             return
-        directory_name = directory_name or os.path.basename(remote_url).replace(".git", "")
+        # If directory_name is None or empty, clone into current directory
+        if not directory_name:
+            directory_name = os.getcwd()
         git.Repo.clone_from(remote_url, directory_name)
         print(f"Repository cloned into '{directory_name}'")
     except Exception as e:
@@ -418,11 +425,23 @@ def fork_repository(remote_to_be_forked, remote_forked):
         if not is_valid_git_url(remote_forked):
             print(f"Error: '{remote_forked}' is not a valid Git repository URL.")
             return
-        directory_name = os.path.basename(remote_to_be_forked).replace(".git", "")
-        clone_repository(remote_to_be_forked, directory_name)
-        repo = git.Repo(directory_name)
-        link_remote("origin", remote_forked)
-        print(f"Repository forked into '{directory_name}' and linked to '{remote_forked}'")
+        # Clone directly into the current working directory
+        clone_repository(remote_to_be_forked, os.getcwd())
+        repo = git.Repo(os.getcwd())
+        link_remote("origin", remote_forked, repo=repo)
+        # Create a FORKED_BY.txt file to record the fork event
+        forked_by_path = os.path.join(os.getcwd(), "FORKED_BY.txt")
+        with open(forked_by_path, "w", encoding="utf-8") as f:
+            f.write(f"Forked from: {remote_to_be_forked}\nForked to: {remote_forked}\nDate: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+        repo.git.add("FORKED_BY.txt")
+        repo.git.commit(m="Forked repository from " + remote_to_be_forked)
+        # Push the commit to the new remote
+        try:
+            repo.remotes.origin.push()
+            print(f"Pushed fork commit to remote '{remote_forked}'")
+        except Exception as push_err:
+            print(f"Error pushing to remote: {push_err}")
+        print(f"Repository forked into main folder and linked to '{remote_forked}'")
     except Exception as e:
         print(f"Error forking repository: {e}")
 
