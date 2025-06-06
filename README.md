@@ -63,7 +63,7 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 ------------
 - [x] Make an AI model to replace http request one
 - [x] Add AI commits
-- [ ] COLORIZE EVERYTHING
+- [x] COLORIZE EVERYTHING
 - [ ] Add commit log/history command
 - [ ] Add workspace status command
 - [x] View and modify remotes commands
