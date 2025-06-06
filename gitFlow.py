@@ -1,6 +1,6 @@
 ###################################################
 #       GitFlow - A simplified version of Git     #
-#          Made by Chinmay M (chinmaym505)        #
+#      Made by Chinmay Malvania (chinmaym505)     #
 #                    6/6/2025                     #
 ###################################################
 
