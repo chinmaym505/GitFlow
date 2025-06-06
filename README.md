@@ -69,7 +69,7 @@ GitFlow is a command-line tool designed to simplify the process of managing Git 
 - [x] View and modify remotes commands
 - [x] Config command for user preferences
 - [x] Update help command for each individual command
-- [ ] Add gui command for users who prefer gui
+- [x] Add gui command for users who prefer gui
 
 
 
