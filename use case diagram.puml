@@ -1,19 +1,28 @@
-@startuml
+@startuml UseCases
 actor User
 
 rectangle "GitFlow" {
-  (Start Repository)
-  (Clone Repository)
-  (Link Remote)
-  (Sync Changes)
-  (Create Branch)
-  (Switch Branch)
-  (Delete Branch)
-  (Reset Changes)
-  (Fork Repository)
-  (AI Assistant)
-  (Help)
-  (Exit)
+  rectangle "Repository Management" {
+    (Start Repository)
+    (Clone Repository)
+    (Link Remote)
+    (Sync Changes)
+    (Create Branch)
+    (Switch Branch)
+    (Delete Branch)
+    (Reset Changes)
+    (Fork Repository)
+  }
+
+  rectangle "Support" {
+    (Help)
+    (Exit)
+
+    rectangle "AI Integration" {
+      (Sync Changes with AI)
+      (AI Assistant)
+    }
+  }
 }
 
 User -- (Start Repository)
@@ -28,4 +37,5 @@ User -- (Fork Repository)
 User -- (AI Assistant)
 User -- (Help)
 User -- (Exit)
+
 @enduml
