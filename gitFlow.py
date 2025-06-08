@@ -1075,6 +1075,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
         """Load user preferences from .GitFlow/user_prefs.json, or guide user to create it if missing."""
         import json
         prefs_dir = os.path.join(self.working_directory, '.GitFlow')
+        ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
         prefs_path = os.path.join(prefs_dir, 'user_prefs.json')
         if not os.path.exists(prefs_dir):
             os.makedirs(prefs_dir, exist_ok=True)
@@ -1097,6 +1098,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
         """Show a Tkinter GUI for configuring preferences. Always updates user_prefs.json on Save."""
         from tkinter import messagebox
         prefs_dir = os.path.join(self.working_directory, '.GitFlow')
+        ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
         prefs_path = os.path.join(prefs_dir, 'user_prefs.json')
         
         # Initialize preferences dictionary with current or default values
@@ -1205,6 +1207,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
     def config(self):
         """Modify user preferences interactively, with optional GUI. Immediately switch modes if GUI preference changes."""
         prefs_dir = os.path.join(self.working_directory, '.GitFlow')
+        ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
         prefs_path = os.path.join(prefs_dir, 'user_prefs.json')
         
         # Load or create prefs
@@ -1403,6 +1406,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
             self.gui_config(main_window)
             # After config, check if GUI is now disabled and restart in terminal mode if needed
             prefs_path = os.path.join(self.working_directory, '.GitFlow', 'user_prefs.json')
+            
             use_gui = True
             # Force reload of preferences from disk to avoid caching
             import json as _json
