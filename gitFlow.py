@@ -1,7 +1,7 @@
 ###################################################
 #       GitFlow - A simplified version of Git     #
 #      Made by Chinmay Malvania (chinmaym505)     #
-#                    6/6/2025                     #
+#                    6/8/2025                     #
 ###################################################
 
 # {{58DFC7E2-4C46-4715-9FCB-684D5EE7E1CF}
@@ -545,18 +545,46 @@ class GitFlow:
             self.print_error(f"Error unlinking remote: {e}")
             self.show_remotes()  # Show remaining remotes
 
-    def clone_repository(self, remote_url, directory_name=None):
+    def clone_repository(self, remote_url, repo_path, temp_clone_path=None):
+        if self.is_valid_git_url(remote_url) == False:
+            self.print_error(f"Error: '{remote_url}' is not a valid Git repository URL.")
+            return
         try:
-            if not self.is_valid_git_url(remote_url):
-                self.print_error(f"Error: '{remote_url}' is not a valid Git repository URL.")
-                return
-            # If directory_name is None or empty, clone into current directory
-            if not directory_name:
-                directory_name = os.getcwd()
-            git.Repo.clone_from(remote_url, directory_name)
-            self.print_success(f"Repository cloned into '{directory_name}'")
+            if temp_clone_path is None:
+                temp_clone_path = os.path.join(repo_path, ".GitFlow", "temp_clone")
+            # Step 1: Clone into a temporary directory
+            if os.path.exists(temp_clone_path):
+                shutil.rmtree(temp_clone_path)  # Clean up any previous attempts
+            git.Repo.clone_from(remote_url, temp_clone_path)
+
+            # Step 2: Check for `.GitFlow` in the cloned repo
+            cloned_gitflow_path = os.path.join(temp_clone_path, ".GitFlow")
+            existing_gitflow_path = os.path.join(repo_path, ".GitFlow")
+
+            if os.path.exists(cloned_gitflow_path):
+                # Replace the existing `.GitFlow` folder
+                if os.path.exists(existing_gitflow_path):
+                    shutil.rmtree(existing_gitflow_path)
+                shutil.move(cloned_gitflow_path, existing_gitflow_path)
+            
+
+            # Step 3: Move all other cloned files into the main repo directory
+            for item in os.listdir(temp_clone_path):
+                src = os.path.join(temp_clone_path, item)
+                dest = os.path.join(repo_path, item)
+                
+                if os.path.exists(dest):
+                    shutil.rmtree(dest) if os.path.isdir(dest) else os.remove(dest)
+                
+                shutil.move(src, dest)
+
+            # Step 4: Clean up the temporary clone folder
+            shutil.rmtree(temp_clone_path)
+            self.print_success("Repository cloned successfully")
+
         except Exception as e:
             self.print_error(f"Error cloning repository: {e}")
+
 
     def fork_repository(self, remote_to_be_forked, remote_forked):
         try:
@@ -567,11 +595,11 @@ class GitFlow:
                 self.print_error(f"Error: '{remote_forked}' is not a valid Git repository URL.")
                 return
             # Clone directly into the current working directory
-            self.clone_repository(remote_to_be_forked, os.getcwd())
-            repo = git.Repo(os.getcwd())
+            self.clone_repository(remote_to_be_forked, self.working_directory)
+            repo = git.Repo(self.working_directory)
             self.link_remote("origin", remote_forked, repo=repo)
             # Create a FORKED_BY.txt file to record the fork event
-            forked_by_path = os.path.join(os.getcwd(), "FORKED_BY.txt")
+            forked_by_path = os.path.join(self.working_directory, "FORKED_BY.txt")
             with open(forked_by_path, "w", encoding="utf-8") as f:
                 f.write(f"Forked from: {remote_to_be_forked}\nForked to: {remote_forked}\nDate: {time.strftime('%Y-%m-%d %H:%M:%S')}")
             repo.git.add("FORKED_BY.txt")
@@ -1075,10 +1103,11 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
         """Load user preferences from .GitFlow/user_prefs.json, or guide user to create it if missing."""
         import json
         prefs_dir = os.path.join(self.working_directory, '.GitFlow')
-        ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
+       
         prefs_path = os.path.join(prefs_dir, 'user_prefs.json')
         if not os.path.exists(prefs_dir):
             os.makedirs(prefs_dir, exist_ok=True)
+            ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
         if not os.path.exists(prefs_path):
             self.print_info("Let's set up your GitFlow preferences!")
             default_commit = self.get_line_input("Enter your default commit message (default: 'Made changes'): ") or "Made changes"
@@ -1146,6 +1175,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
                 
                 # Ensure directory exists
                 os.makedirs(prefs_dir, exist_ok=True)
+                ctypes.windll.kernel32.SetFileAttributesW(prefs_dir, 2)
                 
                 # Write to the preferences file
                 with open(prefs_path, 'w', encoding='utf-8') as f:
@@ -1578,7 +1608,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
     def list_branches(self):
         """List all branches in the current repository, highlighting the current branch."""
         try:
-            repo = git.Repo(os.getcwd())
+            repo = git.Repo(self.working_directory)
             branches = repo.branches
             current = repo.active_branch.name if hasattr(repo, 'active_branch') else None
             if not branches:
@@ -1698,7 +1728,7 @@ Type '{cyan}help <command>{reset}' for detailed usage and examples for a specifi
                 parts = command.split(" ")
                 if len(parts) == 2:
                     remote_url = parts[1]
-                    self.clone_repository(remote_url)
+                    self.clone_repository(remote_url,self.working_directory)
                 else:
                     self.print_warning("Usage: copy <remote_url>")
             elif command == "remotes":
