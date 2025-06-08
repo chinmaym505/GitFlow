@@ -98,7 +98,12 @@ TODO
 - [x] Improve remote repository management  
 - [x] Implement user-configurable settings  
 - [x] Enhance help documentation for individual commands  
-- [x] Introduce GUI support for users who prefer visual interfaces  
+- [x] Introduce GUI support for users who prefer visual interfaces
+- [ ] Add AI merging
+- [ ] Add AI merge conflict resoulution
+- [ ] Add diff command
+- [ ] Add AI branch naming
+      
 
 Notes
 -----
